@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap');
+
+body {
+  text-align: center;
+  color: #232323;
+}
+
+.page-title {
+  text-align: left;
+  font-family: 'Quicksand';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 50px;
+  color: #360000;
+}
+
+.btn-fill {
+  background: #360000ed;
+  border-radius: 32px;
+  color: #fff;
+  padding: 15px 25px 15px 25px;
+  border: none;
+}
+
+.btn-clear {
+  background-color: transparent;
+  border-radius: 32px;
+  color: #360000ed;
+  padding: 15px 25px 15px 25px;
+  border: 1px solid #360000ed
+}
+
+a {
+  text-decoration: none;
+}
