@@ -1,25 +1,23 @@
-import React,{useEffect, useState} from 'react'
+import React from 'react'
 import './ProductCard.css'
 import IconButton from '@mui/material/IconButton';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCartOutlined';
 import { Link } from 'react-router-dom'
-//import {AddToCart} from './../../../Utils/CartUtils'
+import { AddToCart } from '../../utils/AddToCart';
 
-function ProductCard(product) {
-    const [user, setUser] = useState("");
+function ProductCard(props) {
+    // const [user, setUser] = useState("");
+    let userId = '642ab025374b2307605761e0';
 
-    useEffect(() => {
-
-    })
-    
     return (
         <div className="product-card">
-            <img src='images/placeholder.jpg' className="mb-2" alt="product" /><br></br>
-            <Link to=""><h7>Product Name</h7></Link>
+            <img src={props.product.imagePath} alt="product" /><br></br>
+            <hr></hr>
+            <Link to={`/product/${props.product._id}`}><h7>{props.product.name}</h7></Link>
             <div className="d-flex justify-content-between">
-                <h6 className="mt-2">Rs.00.00</h6>
+                <h6 className="mt-2">Rs.{props.product.price}</h6>
                 <IconButton
-                    //onClick={() => AddToCart(props.product._id, user._id)}
+                    onClick={()=>AddToCart(props.product._id, userId,1)}
                     aria-label="delete"
                 >
                     <ShoppingCartIcon/>

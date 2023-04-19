@@ -1,12 +1,57 @@
 import { Button, Checkbox, FormControlLabel, FormGroup, TextField } from '@mui/material'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import './Checkout.css'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateField } from '@mui/x-date-pickers/DateField';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
 
 function Checkout() {
+    const [cart, setCart] = useState();
+    const [total,setTotal] = useState();
+    const { cartId } = useParams()
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        getCartById()
+    }, [])
+
+    async function getCartById(){
+        await axios.get(`http://localhost:5001/cart/${cartId}`).then((res) => {
+            setCart(res.data.data)
+
+            let tempTotal = 0
+            res.data.data?.products.map((product) => (
+                tempTotal = tempTotal + (product.quantity * product.productId.price)
+            ))
+            setTotal(tempTotal)
+        }).catch((error)=>{
+            alert(error.message)
+        })
+    }
+
+    async function handleCheckout(event) {
+        event.preventDefault();
+        const data = {
+            products: cart.products,
+            userId: cart.userId,
+            amount: total + 200
+        }
+
+        const config = {
+            headers: {
+                "content-Type": "application/json",
+            }
+        };
+
+        await axios.post('http://localhost:5001/order/', data, config).then((res) => {
+            alert("Order successful")
+            navigate('/cart')
+        }).catch((error) => {
+            alert(error.message)
+        })
+    }
     return (
         <div className="container mt-5">
             <p className="page-title mb-5">Checkout</p>
@@ -14,46 +59,49 @@ function Checkout() {
                 <div className="row">
                     <div className="col-xl-6 p-5">
                         <div style={{ border: '1px solid #D9D9D9', borderRadius: '8px' }} className="p-2 mb-5">
-                            <div className="row">
-                                <div className="col-xl-3">
-                                    <img alt="product" width="100px" src="images/placeholder.jpg" />
-                                </div>
-                                <div className="col-xl-9">
-                                    <p>Product Name</p>
-                                    <p>2</p>
-                                    <b>Rs.00.00</b>
-                                </div>
-                            </div>
+                            {cart?.products?.map((product,key) => {
+                                return (
+                                    <div key={key} className="row mb-2 align-items-center">
+                                        <div className="col-xl-3">
+                                            <img alt="product" width="100px" src={product.productId.imagePath} />
+                                        </div>
+                                        <div className="col-xl-9">
+                                            <p className='mb-1'>{product.productId.name}</p>
+                                            <p className='mb-1'>{product.quantity}</p>
+                                            <b>Rs.{product.quantity * product.productId.price}.00</b>
+                                        </div>
+                                    </div>
+                                )
+                            })}
                         </div>
                         <div className="d-flex justify-content-between">
                             <p>Product Total</p>
-                            <p>Rs.00.00</p>
+                            <p>Rs.{total}.00</p>
                         </div>
                         <hr></hr>
                         <div className="d-flex justify-content-between">
-                            <p>Delivery charges</p>
-                            <p>Rs.00.00</p>
+                            <p>Service charges</p>
+                            <p>Rs.200.00</p>
                         </div>
                         <hr></hr>
                         <div className="d-flex justify-content-between">
                             <b>Total</b>
-                            <b>Rs.00.00</b>
+                            <b>Rs.{total+200}.00</b>
                         </div>
                     </div>
                     <div className="col-xl-6 card-right">
                         <p className='title mb-5' align="center">Payment</p>
-                        <p>Choose payment method</p>
                         <div>
-                            <img alt="master-card" width={'60px'} className="img-fluid mx-1" src="images/MasterCard.png"/>
-                            <img alt="visa" width={'64px'} className="img-fluid mx-1" src="images/VisaCard.png"/>
+                            <img alt="master-card" width={'60px'} className="img-fluid mx-1" src="/images/MasterCard.png"/>
+                            <img alt="visa" width={'64px'} className="img-fluid mx-1" src="/images/VisaCard.png"/>
                         </div>
-                        <form onSubmit={''}>
+                        <form onSubmit={handleCheckout}>
                             <TextField
                                 inputProps={{ style: { backgroundColor: 'white', borderRadius: '4px' } }}
-                                className="my-3" label="Name on card" size="small" variant="outlined" fullWidth/>
+                                className="my-3" label="Name on card" size="small" variant="outlined" fullWidth required/>
                             <TextField
                                 inputProps={{ style: { backgroundColor: 'white', borderRadius: '4px' } }}
-                                className="my-3" label="Card number" size="small" variant="outlined" fullWidth />
+                                className="my-3" label="Card number" size="small" variant="outlined" fullWidth required/>
                             <div className="row my-3">
                                 <div className="col-xl-4">
                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -62,29 +110,29 @@ function Checkout() {
                                             inputProps={{ style: { backgroundColor: 'white', borderRadius: '4px' } }}
                                             // value={value}
                                             // onChange={(newValue) => setValue(newValue)}
-                                            format='MM/YY'
+                                            format='MM/YY' required
                                         />
                                     </LocalizationProvider>
                                 </div>
                                 <div className="col-xl-4">
                                     <TextField
                                         inputProps={{ style: { backgroundColor: 'white', borderRadius: '4px' } }}
-                                        label="CVV" size="large" variant="outlined"
+                                        label="CVV" size="large" variant="outlined" required
                                     />
                                 </div>
                             </div>
                             <TextField
                                 inputProps={{ style: { backgroundColor: 'white', borderRadius: '4px' } }}
                                 className="my-3" label="Email address" size="small" variant="outlined" fullWidth
-                                type='email'
+                                type='email' required
                             />
                             <TextField
                                 inputProps={{ style: { backgroundColor: 'white', borderRadius: '4px' } }}
-                                className="my-3" label="Discount Coupon" size="small" variant="outlined" fullWidth />
+                                className="my-3" label="Discount Coupon" size="small" variant="outlined" fullWidth/>
                             <FormGroup>
                                 <FormControlLabel
                                     value="end"
-                                    control={<Checkbox color="default" />}
+                                    control={<Checkbox color="default" required/>}
                                     label="by confirming the order, I accept the terms of the user agreement"
                                     labelPlacement="end"
                                 />

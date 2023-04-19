@@ -3,19 +3,27 @@ const Schema = mongoose.Schema;
 
 const ProductSchema = new Schema({
     name: {
-        type: 'string',
+        type: String,
         required: true
     },
     description: {
-        type: 'string',
+        type: String,
         required: true
     },
     category: {
-        type: 'string',
+        type: String,
         required: true
     },
-    image: {
-        type: 'string',
+    imagePath: {
+        type: String,
+        required: true
+    },
+    stock: {
+        type: Number,
+        required: true
+    },
+    price: {
+        type: Number,
         required: true
     }
 })

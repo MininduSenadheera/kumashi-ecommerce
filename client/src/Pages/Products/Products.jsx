@@ -3,9 +3,12 @@ import { Link, useLocation, useParams } from 'react-router-dom'
 import ProductCard from '../../Components/ProductCard/ProductCard'
 import axios from 'axios'
 import './Products.css'
+import { Drawer, List, ListItem, ListItemButton, ListItemIcon } from '@mui/material'
+import MenuIcon from '@mui/icons-material/Menu';
 
 function Products() {
     const [allProducts, setAllProducts] = useState([])
+    const [isAdmin, setIsAdmin] = useState(true)
     const location = useLocation()
     const { category } = useParams()
 
@@ -15,20 +18,71 @@ function Products() {
 
     async function getAllProducts() {
       axios.get(`http://localhost:5001/product/`).then((res) => {
-        setAllProducts(res.data)  
+        setAllProducts(res.data) 
       }).catch((error) => {
         alert(error)
       })
     }
+
+    function handleSearch(event){
+        const searchTerm = event.currentTarget.value
+        
+        axios.get(`http://localhost:5001/product/`).then((res) => {
+            filterContent(res.data, searchTerm.toLowerCase())
+        }).catch((error) => {
+            alert("Failed to fetch products")
+        })
+    }
+
+    function filterContent(data, searchTerm){
+        const result = data.filter((product) => 
+            product.name.toLowerCase().includes(searchTerm) 
+        )
+        setAllProducts(result)
+    }
     
     return (
         <div className="row">
-            <div className="col-xl-2 d-flex flex-column">
-                <Link to='/products/all'>All categories</Link>
-                <Link to='/products/Plumbing'>Plumbing</Link>
-                <Link to='/products/Electrical'>Electrical</Link>
-                <Link to='/products/Gardening'>Gardening</Link>
-                <Link to='/products/Carpentry'>Carpentry</Link>
+            <div className="col-xl-2">
+                <Drawer sx={{ width: 260, flexShrink: 0, '& .MuiDrawer-paper': { width: 260, boxSizing: 'border-box', }, }} variant='permanent' anchor='left'>
+                    <List>
+                        <ListItem>
+                            <ListItemButton>
+                                <ListItemIcon>
+                                    <MenuIcon/>
+                                </ListItemIcon>
+                                <Link className='sidebar-text' to='/products/all'>All categories</Link>
+                            </ListItemButton>
+                        </ListItem>
+                        <Link className='sidebar-text' to='/products/Plumbing'>
+                            <ListItem>
+                                <ListItemButton>Plumbing</ListItemButton> 
+                            </ListItem>
+                        </Link>
+                        <Link className='sidebar-text' to='/products/Electrical'>
+                            <ListItem>
+                                <ListItemButton> Electrical </ListItemButton>
+                            </ListItem>
+                        </Link>
+                        <Link className='sidebar-text' to='/products/Gardening'>
+                            <ListItem>
+                                <ListItemButton> Gardening </ListItemButton>
+                            </ListItem>
+                        </Link>
+                        <Link className='sidebar-text' to='/products/Carpentry'>
+                            <ListItem>
+                                <ListItemButton>  Carpentry </ListItemButton>
+                            </ListItem>
+                        </Link>
+                        {isAdmin && (
+                            <Link className='sidebar-text' to='/product_report'>
+                                <ListItem>
+                                    <ListItemButton>  Product Report </ListItemButton>
+                                </ListItem>
+                            </Link>
+                        )}
+                    </List>
+                </Drawer>
             </div>
             <div className="col-xl-10">
                 {category !== 'all' && (<p className="page-title">{category}</p>)}
@@ -43,12 +97,23 @@ function Products() {
                 ) : category === 'carpentry' ? (
                     <img className="category-image-lg" src='/images/carpentry.png' alt='All products'/>
                 ) : null}
+                <div className="search mt-5" align="center">
+                    <input 
+                        type="text" 
+                        name="search" 
+                        id="search"
+                        placeholder="Search Products" 
+                        onChange={handleSearch} 
+                        required 
+                    />  
+                </div>
+                
                 
                 {category === 'all' ? (
                     <div>
                         <div className="mt-5">
                             <p className="page-title">Categories</p>
-                            <div className="product-grid mx-5 px-5">
+                            <div className="container d-flex justify-content-center">
                                 <div className="category-card"> 
                                     <Link to='/products/Plumbing'>
                                         <div className="d-flex flex-column align-items-center">
@@ -85,7 +150,7 @@ function Products() {
                         </div>
                         <div className="mt-5">
                             <p className="page-title">All Products</p>
-                            <div className="product-grid">
+                            <div className="container product-grid">
                                 {allProducts.map(product => {
                                     return (<ProductCard product={product} />)
                                 })}
@@ -93,7 +158,7 @@ function Products() {
                         </div>
                     </div>
                 ) : (
-                    <div className="product-grid mt-5 px-5 mx-5">
+                    <div className="container product-grid mt-5 px-5 mx-5">
                         {allProducts.filter(product => product.category === category).map(product => {
                             return ( <ProductCard product={product} />)
                         })}
