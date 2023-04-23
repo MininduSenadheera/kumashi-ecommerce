@@ -53,9 +53,9 @@ function Cart() {
 
         cart.products = cart.products.filter(element => element._id !== itemId)
 
-        await axios.put(`http://localhost:5001/cart/`, cart, config).then(() => {
+        await axios.put(`http://localhost:5001/cart/`, cart, config).then((res) => {
             alert("Product removed from cart successfully")
-            navigate('/cart')
+            getCartByUserId()
         }).catch((error) => {
             alert(`Failed to remove the product`)
         })

@@ -88,17 +88,17 @@ function Products() {
                 {category !== 'all' && (<p className="page-title">{category}</p>)}
                 {category === 'all' ? (
                     <img className="category-image-lg" src='/images/all_products.png' alt='All products'/>
-                ) : category === 'plumbing' ? (
-                    <img className="category-image-lg" src='/images/plumbing.png' alt='All products'/>
-                ) : category === 'electrical' ? (
-                    <img className="category-image-lg" src='/images/electrical.png' alt='All products'/>
-                ) : category === 'gardening' ? (
-                    <img className="category-image-lg" src='/images/gardening.png' alt='All products'/>
-                ) : category === 'carpentry' ? (
-                    <img className="category-image-lg" src='/images/carpentry.png' alt='All products'/>
+                ) : category === 'Plumbing' ? (
+                    <img className="category-image-lg" src='/images/plumbing.jpeg' alt='Plumbing'/>
+                ) : category === 'Electrical' ? (
+                    <img className="category-image-lg" src='/images/Electrical.jpg' alt='Electrical'/>
+                ) : category === 'Gardening' ? (
+                    <img className="category-image-lg" src='/images/gardening.jpg' alt='Gardening'/>
+                ) : category === 'Carpentry' ? (
+                    <img className="category-image-lg" src='/images/carpentry.jpg' alt='Carpentry'/>
                 ) : null}
                 <div className="search mt-5" align="center">
-                    <input 
+                    <input  
                         type="text" 
                         name="search" 
                         id="search"
